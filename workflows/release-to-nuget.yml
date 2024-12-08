@@ -1,0 +1,63 @@
+name: Release to NuGet Feeds
+description: |
+  Push packages from a release's assets to GitHub and NuGet feeds.
+
+on:
+  workflow_call:
+    inputs:
+      release-id:
+        description: Release ID
+        type: integer
+        required: true
+      push-github-feed:
+        description: Push to GitHub feed
+        type: boolean
+        required: false
+        default: true
+      push-nuget-feed:
+        description: Push to NuGet feed
+        type: boolean
+        required: false
+        default: false
+    secrets:
+      NUGET_PUSH_KEY:
+        description: 'NuGet push key'
+        required: false
+
+jobs:
+  release:
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🎢 Download release assets
+        uses: ../actions/download-assets
+        with:
+          pattern: '*.*pkg'
+          release-id: ${{ github.event.inputs.release_id }}
+          token: ${{ secrets.token }}
+          path: assets
+      
+      - name: 🔎 Validate at least one package
+        run: |
+          if [ ! -d "assets" ] || [ ! "$(ls -A assets)" ]; then
+            echo "No packages found"
+            exit 1
+          fi
+      
+      - name: 🌐 Push to GitHub feed
+        if: ${{ github.event.inputs.push-github-feed == true }}
+        uses: ../actions/push-to-nuget-feed
+        with:
+          package-path: './assets/*.nupkg'
+          nuget-source: 'https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json'
+          nuget-api-key: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🌐 Push to NuGet feed
+        if: ${{ github.event.inputs.push-nuget-feed == true }}
+        uses: ./actions/push-to-nuget-feed
+        with:
+          package-path: './assets/*.nupkg'
+          nuget-api-key: ${{ secrets.NUGET_PUSH_KEY }}

@@ -1,0 +1,44 @@
+name: Push to NuGet Feed
+description: |
+ Push packages to a NuGet feed.
+ Requires dotnet CLI to be installed on the runner.
+
+inputs:
+  nuget-api-key:
+    description: 'NuGet api key'
+    required: true
+    secret: true
+  nuget-source:
+    description: 'NuGet source'
+    required: false
+    default: 'https://api.nuget.org/v3/index.json'
+  package-path:
+    description: 'Path to the package to be pushed'
+    required: true
+  skip-duplicate:
+    description: 'Skip duplicate packages'
+    required: false
+    default: true
+  no-symbols:
+    description: 'Do not push symbols packages'
+    required: false
+    default: false
+  timeout:
+    description: 'Timeout for pushing the package in seconds'
+    required: false
+    default: 300
+runs:
+  using: 'composite'
+  steps:
+    - name: 🥸 Check .NET version
+      run: dotnet --version
+
+    - name: 🌐 Push to NuGet feed
+      if: success()
+      run: |
+        dotnet nuget push ${{ inputs.package-path }} \
+        --source ${{ inputs.nuget-source }} \
+        ${{ inputs.skip-duplicate == 'true' && '--skip-duplicate' || '' }} \
+        ${{ inputs.no-symbols == 'true' && '--no-symbols' || '' }} \
+        --timeout ${{ inputs.timeout }} \
+        --api-key ${{ inputs.nuget-api-key }}
