@@ -14,8 +14,9 @@ function Get-ReleaseById {
   )
   $url = "https://api.github.com/repos/$repository/releases/$releaseId"
   $headers = @{ 
-    Authorization = "token $token"
-    Accept = 'application/vnd.github+json'
+    'Authorization' = "Bearer $token"
+    'Accept' = 'application/vnd.github+json'
+    'X-GitHub-Api-Version' = '2022-11-28'
    }
   
   Write-Host "Fetching release from URL: $url"
