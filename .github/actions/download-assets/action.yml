@@ -7,7 +7,7 @@ inputs:
     description: 'Pattern to match files'
     required: true
     default: '*'
-  releaseid:
+  release-id:
     description: 'Release ID'
     required: true
   token:
@@ -28,7 +28,7 @@ runs:
         echo "1. Downloading assets for release $env:RELEASE_ID"
       shell: pwsh
       env:
-        RELEASE_ID: ${{ inputs.releaseid }}
+        RELEASE_ID: ${{ inputs.release-id }}
     - run: |
         if (($env:ACTIONS_RUNNER_DEBUG -eq 'true') -or ($env:__VERBOSE -eq 'true')) {
           $VerbosePreference = 'Continue'
@@ -41,4 +41,4 @@ runs:
         __PATTERN: ${{ inputs.pattern }}
         __TOKEN: ${{ inputs.token }}
         __OUTPUT_PATH: ${{ inputs.path }}
-        __RELEASE_ID: ${{ inputs.releaseid }}
+        __RELEASE_ID: ${{ inputs.release-id }}
