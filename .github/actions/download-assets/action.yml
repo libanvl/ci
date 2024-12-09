@@ -26,13 +26,13 @@ runs:
   using: 'composite'
   steps:
     - run: |
-        if ($env:ACTIONS_RUNNER_DEBUG -eq 'true' -or '${{ inputs.verbose }}' -eq 'true') {
+        if ($env:ACTIONS_RUNNER_DEBUG -or ${{ inputs.verbose }}) {
           $VerbosePreference = 'Continue'
         }
         ./download-assets.ps1 `
         -pattern ${{ inputs.pattern }} `
         -token ${{ inputs.token }} `
         -outputPath ${{ inputs.path }} `
-        -releaseId ${{ inputs['release-id'] }}
+        -releaseId ${{ inputs.release-id }}
       shell: pwsh
       working-directory: ${{ github.action_path }}
