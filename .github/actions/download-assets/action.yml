@@ -8,13 +8,9 @@ inputs:
     description: 'Pattern to match files'
     required: true
     default: '*'
-  release:
-    description: 'Release context object'
-    required: false
-    default: ''
   release-id:
     description: 'Release ID'
-    required: false
+    required: true
   token:
     description: 'GitHub token'
     required: true
@@ -35,7 +31,6 @@ runs:
         }
         ./download-assets.ps1 `
         -pattern ${{ inputs.pattern }} `
-        -release ${{ inputs.release }} `
         -token ${{ inputs.token }} `
         -outputPath ${{ inputs.path }} `
         -releaseId ${{ inputs['release-id'] }}

@@ -1,6 +1,5 @@
 param (
   [string]$pattern = "*",
-  [string]$release = $null,
   [string]$token,
   [string]$outputPath = "assets",
   [int]$releaseId = $null
@@ -41,22 +40,21 @@ if (-Not (Test-Path -Path $rootedOutputPath)) {
   Write-Verbose "Output directory already exists: $rootedOutputPath"
 }
 
-# Parse the release context or fetch release by ID
-if ($null -eq $release) {
-  if ($null -eq $releaseId) {
-      Write-Error "Release context or release ID must be provided."
-      exit 1
-  }
-  $repository = $env:GITHUB_REPOSITORY
-  $releaseData = Get-ReleaseById -repository $repository -token $token -releaseId $releaseId
-} else {
-  try {
-      $releaseData = $release | ConvertFrom-Json
-  }
-  catch {
-      Write-Error "Invalid JSON format for release: $_"
-      exit 1
-  }
+# Fetch release by ID
+if ($releaseId -eq $null) {
+  Write-Error "Release ID is required."
+  exit 1
+}
+
+$repository = $env:GITHUB_REPOSITORY
+$releaseData = Get-ReleaseById -repository $repository -token $token -releaseId $releaseId
+
+try {
+    $releaseData = $release | ConvertFrom-Json
+}
+catch {
+    Write-Error "Invalid JSON format for release: $_"
+    exit 1
 }
 
 # Extract asset URLs and download assets
