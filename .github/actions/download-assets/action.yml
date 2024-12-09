@@ -26,7 +26,7 @@ runs:
   using: 'composite'
   steps:
     - run: |
-        if ($env:ACTIONS_RUNNER_DEBUG -or ${{ inputs.verbose }}) {
+        if ($env:ACTIONS_RUNNER_DEBUG -or $${{ inputs.verbose }}) {
           $VerbosePreference = 'Continue'
         }
         ./download-assets.ps1 `
