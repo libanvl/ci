@@ -44,4 +44,4 @@ runs:
         --timeout ${{ inputs.timeout }} `
         --api-key ${{ inputs.nuget-api-key }}
       shell: pwsh
-      working-directory: ${{ github.action_path }}
+      working-directory: ${{ github.workspace }}
