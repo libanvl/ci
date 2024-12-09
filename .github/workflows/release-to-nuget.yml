@@ -31,7 +31,7 @@ jobs:
 
     steps:
       - name: 🎢 Download release assets
-        uses: ../actions/download-assets
+        uses: ../../actions/download-assets
         with:
           pattern: '*.*pkg'
           release-id: ${{ github.event.inputs.release_id }}
@@ -47,7 +47,7 @@ jobs:
       
       - name: 🌐 Push to GitHub feed
         if: ${{ github.event.inputs.push-github-feed == true }}
-        uses: ../actions/push-to-nuget-feed
+        uses: ../../actions/push-to-nuget-feed
         with:
           package-path: './assets/*.nupkg'
           nuget-source: 'https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json'
@@ -55,7 +55,7 @@ jobs:
 
       - name: 🌐 Push to NuGet feed
         if: ${{ github.event.inputs.push-nuget-feed == true }}
-        uses: ./actions/push-to-nuget-feed
+        uses: ../../actions/push-to-nuget-feed
         with:
           package-path: './assets/*.nupkg'
           nuget-api-key: ${{ secrets.NUGET_PUSH_KEY }}
