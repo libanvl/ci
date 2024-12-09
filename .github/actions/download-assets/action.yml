@@ -33,6 +33,6 @@ runs:
         -pattern '${{ inputs.pattern }}' `
         -token '${{ inputs.token }}' `
         -outputPath '${{ inputs.path }}' `
-        -releaseId '${{ inputs.release-id }}'
+        -releaseId '${{ inputs['release-id'] }}'
       shell: pwsh
       working-directory: ${{ github.action_path }}
