@@ -26,7 +26,7 @@ runs:
   using: 'composite'
   steps:
     - run: |
-        'echo '1. Downloading assets for release ${{ inputs.release-id }}'
+        echo '1. Downloading assets for release ${{ inputs.release-id }}'
       shell: pwsh
     - run: |
         if ($env:ACTIONS_RUNNER_DEBUG -or $${{ inputs.verbose }}) {
