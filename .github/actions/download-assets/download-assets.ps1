@@ -25,7 +25,6 @@ function Get-ReleaseById {
     $response = Invoke-RestMethod -Uri $url -Headers $headers -TimeoutSec 30
     
     Write-Host "Successfully fetched release."
-    Write-Host $response
     return $response
   }
   catch {
@@ -52,15 +51,15 @@ if ($releaseId -eq $null) {
 }
 
 $repository = $env:GITHUB_REPOSITORY
-$release = Get-ReleaseById -repository $repository -token $token -releaseId $releaseId
+$releaseData = Get-ReleaseById -repository $repository -token $token -releaseId $releaseId
 
-try {
-    $releaseData = $release | ConvertFrom-Json
-}
-catch {
-    Write-Error "Invalid JSON format for release: $_"
-    exit 1
-}
+# try {
+#     $releaseData = $release | ConvertFrom-Json
+# }
+# catch {
+#     Write-Error "Invalid JSON format for release: $_"
+#     exit 1
+# }
 
 # Extract asset URLs and download assets
 $assets = $releaseData.assets | Where-Object { $_.name -like $pattern }
