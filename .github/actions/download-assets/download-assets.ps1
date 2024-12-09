@@ -15,7 +15,7 @@ function Get-ReleaseById {
   $url = "https://api.github.com/repos/$repository/releases/$releaseId"
   $headers = @{ Authorization = "token $token" }
   
-  Write-Verbose "Fetching release from URL: $url"
+  Write-Host "Fetching release from URL: $url"
 
   try {
     $response = Invoke-RestMethod -Uri $url -Headers $headers -TimeoutSec 30
