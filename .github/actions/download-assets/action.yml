@@ -2,6 +2,7 @@ name: 'Download Release Assets'
 description: |
   Download release assets matching a pattern.
   Either provide the github.release object or a release ID.
+
 inputs:
   pattern:
     description: 'Pattern to match files'
