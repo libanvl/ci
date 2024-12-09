@@ -29,7 +29,7 @@ runs:
   using: 'composite'
   steps:
     - run: |
-        if ($env:ACTIONS_RUNNER_DEBUG -eq 'true' -or ${{ inputs.verbose }} -eq 'true') {
+        if ($env:ACTIONS_RUNNER_DEBUG -eq 'true' -or '${{ inputs.verbose }}' -eq 'true') {
           $VerbosePreference = 'Continue'
         }
         ./download-assets.ps1 `
