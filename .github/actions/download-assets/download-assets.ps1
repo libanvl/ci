@@ -47,7 +47,7 @@ if ($releaseId -eq $null) {
 }
 
 $repository = $env:GITHUB_REPOSITORY
-$releaseData = Get-ReleaseById -repository $repository -token $token -releaseId $releaseId
+$release = Get-ReleaseById -repository $repository -token $token -releaseId $releaseId
 
 try {
     $releaseData = $release | ConvertFrom-Json
