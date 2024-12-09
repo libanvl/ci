@@ -1,13 +1,11 @@
 name: Release to NuGet Feeds
-description: |
-  Push packages from a release's assets to GitHub and NuGet feeds.
 
 on:
   workflow_call:
     inputs:
       release-id:
         description: Release ID
-        type: integer
+        type: number
         required: true
       push-github-feed:
         description: Push to GitHub feed
@@ -21,7 +19,7 @@ on:
         default: false
     secrets:
       NUGET_PUSH_KEY:
-        description: 'NuGet push key'
+        description: NuGet push key
         required: false
 
 jobs:
