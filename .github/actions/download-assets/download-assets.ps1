@@ -19,6 +19,7 @@ function Get-ReleaseById {
 
   try {
     $response = Invoke-RestMethod -Uri $url -Headers $headers -TimeoutSec 30
+    Write-Host $response
     
     Write-Host "Successfully fetched release."
     return $response
