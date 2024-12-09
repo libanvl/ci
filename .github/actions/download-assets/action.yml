@@ -11,6 +11,7 @@ inputs:
   release:
     description: 'Release context object'
     required: false
+    default: ''
   release-id:
     description: 'Release ID'
     required: false
