@@ -36,6 +36,7 @@ jobs:
           pattern: '*.*pkg'
           releaseid: ${{ github.event.inputs.release-id }}
           path: assets
+          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: 🔎 Validate at least one package
         run: |

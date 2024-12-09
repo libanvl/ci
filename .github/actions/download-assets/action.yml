@@ -10,6 +10,9 @@ inputs:
   releaseid:
     description: 'Release ID'
     required: true
+  token:
+    description: 'GitHub token'
+    required: true
   path:
     description: 'Path for downloaded assets'
     required: true
@@ -36,6 +39,6 @@ runs:
       env:
         __VERBOSE: ${{ inputs.verbose }}
         __PATTERN: ${{ inputs.pattern }}
-        __TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        __TOKEN: ${{ inputs.token }}
         __OUTPUT_PATH: ${{ inputs.path }}
         __RELEASE_ID: ${{ inputs.releaseid }}
