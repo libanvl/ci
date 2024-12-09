@@ -5,6 +5,7 @@ on:
     inputs:
       release-id:
         description: Release ID
+        type: string
         required: true
       push-github-feed:
         description: Push to GitHub feed
@@ -34,7 +35,7 @@ jobs:
         with:
           pattern: '*.*pkg'
           release-id: ${{ github.event.inputs.release_id }}
-          token: ${{ secrets.token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           path: assets
       
       - name: 🔎 Validate at least one package
