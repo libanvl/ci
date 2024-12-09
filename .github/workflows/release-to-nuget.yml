@@ -34,8 +34,7 @@ jobs:
         uses: libanvl/ci/.github/actions/download-assets@main
         with:
           pattern: '*.*pkg'
-          release-id: ${{ github.event.inputs.release-id }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          releaseid: ${{ github.event.inputs.release-id }}
           path: assets
       
       - name: 🔎 Validate at least one package

@@ -1,8 +1,8 @@
 param (
   [string]$pattern = "*",
-  [string]$token,
+  [string]$token = $null,
   [string]$outputPath = "assets",
-  [int]$releaseId = $null
+  [string]$releaseId = $null
 )
 
 # Function to fetch release by ID
@@ -10,7 +10,7 @@ function Get-ReleaseById {
   param (
     [string]$repository,
     [string]$token,
-    [int]$releaseId
+    [string]$releaseId
   )
   $url = "https://api.github.com/repos/$repository/releases/$releaseId"
   $headers = @{ Authorization = "token $token" }
