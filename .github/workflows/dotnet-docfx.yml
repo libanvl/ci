@@ -8,6 +8,11 @@ on:
         type: string
         required: true
         default: 'github-pages'
+      dotnet-version:
+        description: .NET version to use or 'global' to use global.json
+        type: string
+        required: false
+        default: '8.x.x'
 
 permissions:
   actions: read
@@ -30,8 +35,17 @@ jobs:
     
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v4
+      if: ${{ inputs.dotnet-version == 'global' }}
       with:
         global-json-file: ./global.json
+      env:
+        DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      if: ${{ inputs.dotnet-version != 'global' }}
+      with:
+        dotnet-version: ${{ inputs.dotnet-version }}
       env:
         DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     
@@ -41,10 +55,10 @@ jobs:
         setCommonVars: true
       id: nbgv
     
-    - name: Install Tools
+    - name: Install tools
       run: dotnet tool restore
     
-    - name: 📚 Generate documentation
+    - name: Generate documentation
       run: dotnet docfx docfx/docfx.json
     
     - name: Upload artifact

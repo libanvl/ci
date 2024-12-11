@@ -33,7 +33,12 @@ runs:
         if (($env:ACTIONS_RUNNER_DEBUG -eq 'true') -or ($env:__VERBOSE -eq 'true')) {
           $VerbosePreference = 'Continue'
         }
-        ./download-assets.ps1 -pattern $env:__PATTERN -token $env:__TOKEN -outputPath $env:__OUTPUT_PATH -releaseId $env:__RELEASE_ID -Verbose
+        ./download-assets.ps1 `
+        -pattern $env:__PATTERN `
+        -token $env:__TOKEN `
+        -outputPath $env:__OUTPUT_PATH `
+        -releaseId $env:__RELEASE_ID `
+        -Verbose
       shell: pwsh
       working-directory: ${{ github.action_path }}
       env:
