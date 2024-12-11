@@ -2,6 +2,12 @@ name: 📚 Docs
 
 on:
   workflow_call:
+    inputs:
+      environment:
+        description: Environment to build
+        type: string
+        required: true
+        default: 'github-pages'
     secrets:
       GITHUB_TOKEN:
         description: GitHub token
@@ -14,6 +20,9 @@ permissions:
 
 jobs:
   publish-docs:
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     outputs:
       page_url: ${{ steps.deployment.outputs.page_url }}
