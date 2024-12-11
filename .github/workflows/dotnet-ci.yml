@@ -47,7 +47,7 @@ jobs:
             pack:     false
             push-github: false
             draft-release: false
-    uses: libanvl/ci/.github/actions/dotnet-ci-os@main
+    uses: libanvl/ci/.github/workflows/dotnet-ci-os@main
     with:
       os: ${{ matrix.os }}
       configuration: ${{ inputs.configuration }}
