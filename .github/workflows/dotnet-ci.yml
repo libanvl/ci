@@ -25,9 +25,7 @@ on:
         default: true
     secrets:
       CODECOV_TOKEN:
-        required: true
-      GITHUB_TOKEN:
-        required: true
+        required: false
 
 jobs:
   build:

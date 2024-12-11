@@ -8,10 +8,6 @@ on:
         type: string
         required: true
         default: 'github-pages'
-    secrets:
-      GITHUB_TOKEN:
-        description: GitHub token
-        required: true
 
 permissions:
   actions: read
