@@ -1,4 +1,4 @@
-name: 📚 Docs
+name: 📑 .NET docfx Build and Deploy
 
 on:
   workflow_call:

@@ -1,0 +1,199 @@
+name: ⚒️ .NET CI with GitHub Package Feed, CodeCov, and Draft Release
+
+on:
+  workflow_call:
+    inputs:
+      os:
+        description: Operating system to run on
+        type: string
+        required: true
+        default: 'ubuntu-latest'
+      configuration:
+        description: Configuration to build
+        type: string
+        required: true
+        default: 'Release'
+      dotnet-version:
+        description: .NET version to use or 'global' to use global.json
+        type: string
+        required: false
+        default: '8.x.x'
+      dotnet-verbosity:
+        description: Verbosity for dotnet
+        type: string
+        required: false
+        default: 'normal'
+      coverage:
+        description: Collect code coverage
+        type: boolean
+        required: true
+        default: true
+      pack:
+        description: Pack NuGet package
+        type: boolean
+        required: true
+        default: true
+      push-github:
+        description: Push to GitHub package feed
+        type: boolean
+        required: true
+        default: true
+      draft-release:
+        description: Prepare draft release
+        type: boolean
+        required: true
+        default: true
+    secrets:
+      CODECOV_TOKEN:
+        required: false
+
+jobs:
+  build:
+    runs-on: ${{ inputs.os }}
+    defaults:
+      run:
+        shell: pwsh
+    outputs:
+      prerelease-version: ${{ steps.nbgv.outputs.PrereleaseVersion }}
+      tag-name: v${{ steps.nbgv.outputs.NuGetPackageVersion }}
+      
+    env:
+      CONFIGURATION: ${{ inputs.configuration || 'Release' }}
+      VERBOSITY: ${{ inputs.dotnet-verbosity || 'normal' }}
+
+    steps:
+      - name: 🧺 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # avoid shallow clone so nbgv can do its work
+      
+      - name: 🏭 Setup .NET
+        uses: actions/setup-dotnet@v4
+        if: ${{ inputs.dotnet-version == 'global' }}
+        with:
+          global-json-file: ./global.json
+        env:
+          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+      - name: 🏭 Setup .NET
+        uses: actions/setup-dotnet@v4
+        if: ${{ inputs.dotnet-version != 'global' }}
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+        env:
+          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      
+      - name: 🔢 Nerdbank.GitVersioning
+        uses: dotnet/nbgv@v0.4.2
+        with:
+          setCommonVars: true
+        id: nbgv
+      
+      - name: ⚒️ Restore
+        run: dotnet restore
+      
+      - name: ⚒️ Build
+        run: |
+          dotnet build `
+          --configuration $env:CONFIGURATION `
+          --no-restore `
+          --verbosity $env:VERBOSITY
+        env:
+          ContinuousIntegrationBuild: true
+      
+      - name: 🧪 Test
+        if: ${{ !inputs.coverage }}
+        run: |
+          dotnet test `
+          --configuration $env:CONFIGURATION `
+          --no-restore `
+          --no-build `
+          --verbosity $env:VERBOSITY
+      
+      - name: 🧪 Test With Coverage
+        if: ${{ inputs.coverage }}
+        run: |
+          dotnet test `
+          --configuration $env:CONFIGURATION `
+          --no-restore `
+          --no-build `
+          --verbosity $env:VERBOSITY
+        env:
+          CollectCoverage: true
+          CoverletOutputFormat: opencover
+      
+      - name: 💬 Print Public Release
+        if: ${{ inputs.pack }}
+        run: echo ${{ steps.nbgv.outputs.PublicRelease }}
+      
+      - name: 📦 Pack
+        if: ${{ inputs.pack }}
+        run: |
+          dotnet pack `
+          --configuration $env:CONFIGURATION `
+          --no-restore `
+          --no-build `
+          --verbosity $env:VERBOSITY `
+          --output nupkg
+      
+      - name: 📦 Write Nuget Version
+        if: ${{ inputs.pack }}
+        run: echo ${{ steps.nbgv.outputs.NuGetPackageVersion }} > ./nupkg/version.txt
+      
+      - name: 🌐 Upload Package Artifact
+        if: ${{ inputs.pack }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: nupkg
+          path: ./nupkg/*
+      
+      - name: 🌐 Upload Code Coverage
+        if: ${{ inputs.coverage }}
+        uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: false # optional (default = false)
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: false # optional (default = false)
+  
+  push-github:
+    needs: build
+    runs-on: ${{ inputs.os }}
+    if: ${{ inputs.push-github }}
+    steps:
+      - name: Download Package Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nupkg
+          path: ./nupkg
+      - name: 📦 Push Package to GitHub
+        uses: libanvl/ci/.github/actions/push-to-nuget-feed@main
+        with:
+          nuget-api-key: ${{ secrets.GITHUB_TOKEN }}
+          nuget-source: 'https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json'
+          package-path: ./nupkg/*.nupkg
+
+  draft-release:
+    needs: build
+    runs-on: ${{ inputs.os }}
+    permissions:
+      contents: write
+      actions: read
+    if: ${{ inputs.draft-release }}
+    steps:
+      - name: Download Package Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nupkg
+          path: ./nupkg
+      - name: 📋 Create Draft Release
+        uses: softprops/action-gh-release@v2
+        with:
+          target_commitish: ${{ github.ref_name }}
+          tag_name: ${{ needs.build.outputs.tag-name }}
+          files: ./nupkg/*
+          draft: true
+          prerelease: true
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
