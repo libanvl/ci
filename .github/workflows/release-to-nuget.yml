@@ -1,4 +1,4 @@
-name: Release to NuGet Feeds
+name: 📦 Release to NuGet Feeds
 
 on:
   workflow_call:

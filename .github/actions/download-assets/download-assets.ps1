@@ -53,14 +53,6 @@ if ($releaseId -eq $null) {
 $repository = $env:GITHUB_REPOSITORY
 $releaseData = Get-ReleaseById -repository $repository -token $token -releaseId $releaseId
 
-# try {
-#     $releaseData = $release | ConvertFrom-Json
-# }
-# catch {
-#     Write-Error "Invalid JSON format for release: $_"
-#     exit 1
-# }
-
 # Extract asset URLs and download assets
 $assets = $releaseData.assets | Where-Object { $_.name -like $pattern }
 
