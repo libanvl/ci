@@ -103,7 +103,6 @@ jobs:
           ContinuousIntegrationBuild: true
             
       - name: 🧪 Test
-        if: ${{ inputs.coverage }}
         run: |
           dotnet test `
           --configuration $env:CONFIGURATION `
@@ -120,6 +119,14 @@ jobs:
           name: Test Results (${{ matrix.os }})
           path: ./**/*.trx
 
+      - name: 🌐 Upload Code Coverage
+        if: ${{ inputs.coverage }}
+        uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: false # optional (default = false)
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: false # optional (default = false)
+          
       - name: 💬 Print Public Release
         if: ${{ inputs.pack }}
         run: echo ${{ steps.nbgv.outputs.PublicRelease }}
@@ -144,14 +151,6 @@ jobs:
         with:
           name: nupkg
           path: ./nupkg/*
-      
-      - name: 🌐 Upload Code Coverage
-        if: ${{ inputs.coverage }}
-        uses: codecov/codecov-action@v5
-        with:
-          fail_ci_if_error: false # optional (default = false)
-          token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: false # optional (default = false)
   
   push-github:
     needs: build
