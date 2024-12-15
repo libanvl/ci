@@ -50,6 +50,7 @@ on:
 jobs:
   build:
     runs-on: ${{ inputs.os }}
+    name: build (${{ matrix.os }})
     defaults:
       run:
         shell: pwsh
@@ -67,7 +68,7 @@ jobs:
         with:
           fetch-depth: 0 # avoid shallow clone so nbgv can do its work
       
-      - name: 🏭 Setup .NET
+      - name: 🏭 Setup .NET (global.json)
         uses: actions/setup-dotnet@v4
         if: ${{ inputs.dotnet-version == 'global' }}
         with:
@@ -75,7 +76,7 @@ jobs:
         env:
           DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
-      - name: 🏭 Setup .NET
+      - name: 🏭 Setup .NET (${{ inputs.dotnet-version }})
         uses: actions/setup-dotnet@v4
         if: ${{ inputs.dotnet-version != 'global' }}
         with:
@@ -110,14 +111,14 @@ jobs:
           --no-build `
           --verbosity $env:VERBOSITY `
           --logger 'trx;LogFileName=TestResults.trx'
-          ${{ inputs.coverage && '-p:''CollectCoverage=true;CoverletOutputFormat=opencover''' || '' }}
+          ${{ inputs.coverage && '/p:''CollectCoverage=true;CoverletOutputFormat=opencover''' || '' }}
 
-      - name: Upload Test Results
+      - name: 🌐 Upload Test Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Test Results (${{ matrix.os }})
-          path: ./TestResults.trx
+          path: ./**/*.trx
 
       - name: 💬 Print Public Release
         if: ${{ inputs.pack }}
