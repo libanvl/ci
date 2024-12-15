@@ -1,48 +1,40 @@
-name: 'Download Release Assets'
-description: |
-  Download release assets matching a pattern.
+name: Download Release Assets
+description: Download release assets matching a pattern.
 
 inputs:
   pattern:
-    description: 'Pattern to match files'
+    description: Pattern to match files
     required: true
     default: '*'
   release-id:
-    description: 'Release ID'
+    description: Release ID
     required: true
   token:
-    description: 'GitHub token'
+    description: GitHub token
     required: true
   path:
-    description: 'Path for downloaded assets'
+    description: Path for downloaded assets
     required: true
   verbose:
-    description: 'Enable verbose tracing'
+    description: Enable verbose tracing
     required: false
     default: false
 
 runs:
-  using: 'composite'
+  using: composite
   steps:
     - run: |
-        echo "1. Downloading assets for release $env:RELEASE_ID"
-      shell: pwsh
-      env:
-        RELEASE_ID: ${{ inputs.release-id }}
-    - run: |
-        if (($env:ACTIONS_RUNNER_DEBUG -eq 'true') -or ($env:__VERBOSE -eq 'true')) {
-          $VerbosePreference = 'Continue'
-        }
+        echo "1. Downloading assets for release $env:__RELEASE_ID"
         ./download-assets.ps1 `
         -pattern $env:__PATTERN `
         -token $env:__TOKEN `
         -outputPath $env:__OUTPUT_PATH `
         -releaseId $env:__RELEASE_ID `
-        -Verbose
+        ${{ (inputs.VERBOSE || env.ACTIONS_RUNNER_DEBUG == 'true') && '-Verbose' || '' }}
+      id: download-assets
       shell: pwsh
       working-directory: ${{ github.action_path }}
       env:
-        __VERBOSE: ${{ inputs.verbose }}
         __PATTERN: ${{ inputs.pattern }}
         __TOKEN: ${{ inputs.token }}
         __OUTPUT_PATH: ${{ inputs.path }}

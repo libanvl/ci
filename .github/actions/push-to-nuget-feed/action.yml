@@ -5,30 +5,30 @@ description: |
 
 inputs:
   nuget-api-key:
-    description: 'NuGet api key'
+    description: NuGet api key
     required: true
     secret: true
   nuget-source:
-    description: 'NuGet source'
+    description: NuGet source
     required: false
-    default: 'https://api.nuget.org/v3/index.json'
+    default: https://api.nuget.org/v3/index.json
   package-path:
-    description: 'Path to the package to be pushed'
+    description: Path to the package to be pushed
     required: true
   skip-duplicate:
-    description: 'Skip duplicate packages'
+    description: Skip duplicate packages
     required: false
     default: true
   no-symbols:
-    description: 'Do not push symbols packages'
+    description: Do not push symbols packages
     required: false
     default: false
   timeout:
-    description: 'Timeout for pushing the package in seconds'
+    description: Timeout for pushing the package in seconds
     required: false
     default: 300
 runs:
-  using: 'composite'
+  using: composite
   steps:
     - name: 🥸 Check .NET version
       run: dotnet --version
