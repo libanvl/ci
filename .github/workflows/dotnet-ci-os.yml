@@ -48,16 +48,6 @@ on:
         required: false
 
 jobs:
-  event_file:
-    name: "Event File for Test Results"
-    runs-on: ubuntu-latest
-    steps:
-    - name: Upload
-      uses: actions/upload-artifact@v4
-      with:
-        name: Event File
-        path: ${{ github.event_path }}
-
   build:
     runs-on: ${{ inputs.os }}
     defaults:
