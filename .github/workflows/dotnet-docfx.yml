@@ -13,6 +13,11 @@ on:
         type: string
         required: false
         default: '8.x.x'
+      docfx-config:
+        description: Path to docfx.json
+        type: string
+        required: false
+        default: 'docfx/docfx.json'
 
 permissions:
   actions: read
@@ -59,7 +64,7 @@ jobs:
       run: dotnet tool restore
     
     - name: Generate documentation
-      run: dotnet docfx docfx/docfx.json
+      run: dotnet docfx ${{ inputs.docfx-config }}
     
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
