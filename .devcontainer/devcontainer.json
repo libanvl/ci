@@ -5,16 +5,9 @@
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/powershell:lts-debian-11",
 	"features": {
-		"ghcr.io/devcontainers/features/common-utils:2": {
-			"installZsh": "true",
-			"username": "vscode",
-			"upgradePackages": "false",
-			"nonFreePackages": "true"
-		},
-		"ghcr.io/devcontainers/features/github-cli:1": {
-			"installDirectlyFromGitHubRelease": true,
-			"version": "latest"
-		}
+		"ghcr.io/devcontainers/features/common-utils:2": {},
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/dotnet:2": {}
 	},
 
 	"postCreateCommand": "sudo chsh vscode -s \"$(which pwsh)\"",
@@ -30,7 +23,9 @@
 			
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
-				"ms-vscode.powershell"
+				"ms-vscode.powershell",
+				"github.vscode-github-actions",
+				"DavidAnson.vscode-markdownlint"
 			]
 		}
 	}

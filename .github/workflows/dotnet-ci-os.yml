@@ -48,6 +48,16 @@ on:
         required: false
 
 jobs:
+  event_file:
+    name: "Event File for Test Results"
+    runs-on: ubuntu-latest
+    steps:
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: Event File
+        path: ${{ github.event_path }}
+
   build:
     runs-on: ${{ inputs.os }}
     defaults:
@@ -100,28 +110,25 @@ jobs:
           --verbosity $env:VERBOSITY
         env:
           ContinuousIntegrationBuild: true
-      
+            
       - name: 🧪 Test
-        if: ${{ !inputs.coverage }}
-        run: |
-          dotnet test `
-          --configuration $env:CONFIGURATION `
-          --no-restore `
-          --no-build `
-          --verbosity $env:VERBOSITY
-      
-      - name: 🧪 Test With Coverage
         if: ${{ inputs.coverage }}
         run: |
           dotnet test `
           --configuration $env:CONFIGURATION `
           --no-restore `
           --no-build `
-          --verbosity $env:VERBOSITY
-        env:
-          CollectCoverage: true
-          CoverletOutputFormat: opencover
-      
+          --verbosity $env:VERBOSITY `
+          --logger 'trx;LogFileName=TestResults.trx'
+          ${{ inputs.coverage && '-p:''CollectCoverage=true;CoverletOutputFormat=opencover''' || '' }}
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Test Results (${{ matrix.os }})
+          path: ./TestResults.trx
+
       - name: 💬 Print Public Release
         if: ${{ inputs.pack }}
         run: echo ${{ steps.nbgv.outputs.PublicRelease }}
