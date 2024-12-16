@@ -14,10 +14,10 @@ on:
         required: true
         default: 'Release'
       dotnet-version:
-        description: .NET version to use or 'global' to use global.json
+        description: ".NET version to use or '' to use global.json"
         type: string
         required: false
-        default: '8.x.x'
+        default: ''
       dotnet-verbosity:
         description: Verbosity for dotnet
         type: string
@@ -50,7 +50,6 @@ on:
 jobs:
   build:
     runs-on: ${{ inputs.os }}
-    name: build (${{ matrix.os }})
     defaults:
       run:
         shell: pwsh
@@ -68,17 +67,8 @@ jobs:
         with:
           fetch-depth: 0 # avoid shallow clone so nbgv can do its work
       
-      - name: 🏭 Setup .NET (global.json)
+      - name: 🏭 Setup .NET (${{ inputs.dotnet-version || 'global.json' }})
         uses: actions/setup-dotnet@v4
-        if: ${{ inputs.dotnet-version == 'global' }}
-        with:
-          global-json-file: ./global.json
-        env:
-          DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-
-      - name: 🏭 Setup .NET (${{ inputs.dotnet-version }})
-        uses: actions/setup-dotnet@v4
-        if: ${{ inputs.dotnet-version != 'global' }}
         with:
           dotnet-version: ${{ inputs.dotnet-version }}
         env:
@@ -110,13 +100,13 @@ jobs:
           --no-build `
           --verbosity $env:VERBOSITY `
           --logger 'trx;LogFileName=TestResults.trx'
-          ${{ inputs.coverage && '/p:''CollectCoverage=true;CoverletOutputFormat=opencover''' || '' }}
+          ${{ inputs.coverage && '''/p:CollectCoverage=true;CoverletOutputFormat=opencover''' || '' }}
 
       - name: 🌐 Upload Test Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: Test Results (${{ matrix.os }})
+          name: Test Results (${{ inputs.os }})
           path: ./**/*.trx
 
       - name: 🌐 Upload Code Coverage
@@ -126,7 +116,7 @@ jobs:
           fail_ci_if_error: false # optional (default = false)
           token: ${{ secrets.CODECOV_TOKEN }}
           verbose: false # optional (default = false)
-          
+
       - name: 💬 Print Public Release
         if: ${{ inputs.pack }}
         run: echo ${{ steps.nbgv.outputs.PublicRelease }}
