@@ -49,6 +49,7 @@ on:
 
 jobs:
   build:
+    name: ${{ inputs.os }} Build
     runs-on: ${{ inputs.os }}
     defaults:
       run:
@@ -99,7 +100,7 @@ jobs:
           --no-restore `
           --no-build `
           --verbosity $env:VERBOSITY `
-          --logger 'trx;LogFileName=TestResults.trx'
+          --logger 'trx;LogFileName=TestResults.trx' `
           ${{ inputs.coverage && '''/p:CollectCoverage=true;CoverletOutputFormat=opencover''' || '' }}
 
       - name: 🌐 Upload Test Results
