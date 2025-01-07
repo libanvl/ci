@@ -100,7 +100,7 @@ jobs:
           --no-restore `
           --no-build `
           --verbosity $env:VERBOSITY `
-          --logger 'trx;LogFileName=TestResults.trx' `
+          --logger 'junit;LogFileName={assembly}.{framework}.results.xml' `
           ${{ inputs.coverage && '''/p:CollectCoverage=true;CoverletOutputFormat=opencover''' || '' }}
 
       - name: 🌐 Upload Test Results
@@ -108,19 +108,23 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Test Results (${{ inputs.os }})
-          path: ./**/*.trx
+          path: ./**/*.results.xml
 
-      - name: 🌐 Upload Code Coverage
+      - name: ☔ Upload Test Results to Codecov
+        if: always()
+        uses: codecov/test-results-action@v1
+        with:
+          fail_ci_if_error: true # optional (default = false)
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true # optional (default = false)
+
+      - name: ☔ Upload Code Coverage
         if: ${{ inputs.coverage }}
         uses: codecov/codecov-action@v5
         with:
-          fail_ci_if_error: false # optional (default = false)
+          fail_ci_if_error: true # optional (default = false)
           token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: false # optional (default = false)
-
-      - name: 💬 Print Public Release
-        if: ${{ inputs.pack }}
-        run: echo ${{ steps.nbgv.outputs.PublicRelease }}
+          verbose: true # optional (default = false)
       
       - name: 📦 Pack
         if: ${{ inputs.pack }}
@@ -135,6 +139,10 @@ jobs:
       - name: 📦 Write Nuget Version
         if: ${{ inputs.pack }}
         run: echo ${{ steps.nbgv.outputs.NuGetPackageVersion }} > ./nupkg/version.txt
+    
+      - name: 💬 Write Public Release
+        if: ${{ inputs.pack }}
+        run: echo ${{ steps.nbgv.outputs.PublicRelease }} > ./nupkg/public-release.txt
       
       - name: 🌐 Upload Package Artifact
         if: ${{ inputs.pack }}
