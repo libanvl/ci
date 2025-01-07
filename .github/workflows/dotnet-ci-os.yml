@@ -100,7 +100,7 @@ jobs:
           --no-restore `
           --no-build `
           --verbosity $env:VERBOSITY `
-          --logger 'junit;LogFileName={assembly}.{framework}.results.xml' `
+          --logger 'junit;LogFileName={assembly}.{framework}.junit.xml' `
           ${{ inputs.coverage && '''/p:CollectCoverage=true;CoverletOutputFormat=opencover''' || '' }}
 
       - name: 🌐 Upload Test Results
@@ -108,7 +108,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Test Results (${{ inputs.os }})
-          path: ./**/*.results.xml
+          path: ./**/*.junit.xml
 
       - name: ☔ Upload Test Results to Codecov
         if: always()
