@@ -33,12 +33,12 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            coverage: true
+            coverage: false
             pack:     true
             push-github: ${{ inputs.push-to-github }}
             draft-release: ${{ inputs.prepare-draft-release }}
           - os: windows-latest
-            coverage: false
+            coverage: true
             pack:     false
             push-github: false
             draft-release: false
